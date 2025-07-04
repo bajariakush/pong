@@ -80,7 +80,7 @@ class PressAnyKeyToExitScene(Scene):
             self._is_valid = False
 
 
-class TitleScreen(PressAnyKeyToExitScene):
+class TitleScreen(Scene):
     """Title screen for Pong"""
 
     def __init__(self, screen, message, color, size, background_color=rgbcolors.white):
@@ -91,19 +91,29 @@ class TitleScreen(PressAnyKeyToExitScene):
         self._size = size
         self._blinker_timer = 0
         self._blink_visible = True
+        self._selected_option = 0
+        self._game_mode = None
 
     def draw(self):
         """Draw title scene to screen"""
         super().draw()
-        title_font = pygame.font.Font("assets/fonts/pong.ttf", 80)
-        info_font = pygame.font.Font("assets/fonts/pong.ttf", 20)
-        player1_font = pygame.font.Font("assets/fonts/pong.ttf", 40)
-        player2_font = pygame.font.Font("assets/fonts/pong.ttf", 40)
+        try:
+            title_font = pygame.font.Font("assets/fonts/pong.ttf", 80)
+            info_font = pygame.font.Font("assets/fonts/pong.ttf", 20)
+            player1_font = pygame.font.Font("assets/fonts/pong.ttf", 40)
+            player2_font = pygame.font.Font("assets/fonts/pong.ttf", 40)
+        except pygame.error:
+            # Fallback to default font if custom font fails
+            title_font = pygame.font.Font(None, 80)
+            info_font = pygame.font.Font(None, 20)
+            player1_font = pygame.font.Font(None, 40)
+            player2_font = pygame.font.Font(None, 40)
+            
         title_surface = title_font.render(self._message, True, rgbcolors.black)
         
         # what to display and positioning
         instructions_surface = info_font.render(
-            "Press enter or return to play", True, rgbcolors.black
+            "Use Up/Down arrows to select, Enter to play", True, rgbcolors.black
         )
         control_surface = info_font.render(
             "Control the paddle with W/S or Up/Down", True, rgbcolors.black
@@ -138,11 +148,22 @@ class TitleScreen(PressAnyKeyToExitScene):
 
         # blinking arrow
         if self._blink_visible:
-            arrow_font = pygame.font.Font("assets/fonts/pong.ttf", 40)
+            try:
+                arrow_font = pygame.font.Font("assets/fonts/pong.ttf", 40)
+            except pygame.error:
+                arrow_font = pygame.font.Font(None, 40)
+            
             arrow_surface = arrow_font.render(">", True, rgbcolors.black)
-            arrow_rect = arrow_surface.get_rect(
-                midright=(player1_rect.left - 20, player1_rect.centery - 3.5)
-            )
+            
+            # Position arrow based on selected option
+            if self._selected_option == 0:  # 1 Player
+                arrow_rect = arrow_surface.get_rect(
+                    midright=(player1_rect.left - 20, player1_rect.centery - 3.5)
+                )
+            else:  # 2 Player
+                arrow_rect = arrow_surface.get_rect(
+                    midright=(player2_rect.left - 20, player2_rect.centery - 3.5)
+                )
             self._screen.blit(arrow_surface, arrow_rect)
 
     def update_scene(self):
@@ -152,6 +173,26 @@ class TitleScreen(PressAnyKeyToExitScene):
             self._blink_visible = not self._blink_visible
             self._blinker_timer = 0
         self.draw()
+
+    def process_event(self, event):
+        """Process game events for menu navigation"""
+        super().process_event(event)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                self._selected_option = 0  # Select "1 Player"
+            elif event.key == pygame.K_DOWN:
+                self._selected_option = 1  # Select "2 Player"
+            elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+                # Set game mode based on selection and exit title screen
+                if self._selected_option == 0:
+                    self._game_mode = "1_player"
+                else:
+                    self._game_mode = "2_player"
+                self._is_valid = False
+
+    def get_selected_game_mode(self):
+        """Return the selected game mode"""
+        return self._game_mode
 
 class GameScreen(Scene):
     """Game scene for Pong"""
