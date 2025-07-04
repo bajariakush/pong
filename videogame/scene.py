@@ -282,6 +282,8 @@ class GameScreen(Scene):
                 return
             else:
                 self._serve = False
+                # Set random velocity when serve actually begins
+                self._ball_velocity = [8 * random.choice([-1, 1]), 8 * random.choice([-1, 1])]
         
         # round delay after scoring
         if self._wait_after_score:
@@ -371,7 +373,8 @@ class GameScreen(Scene):
         """reset the ball to the center of the screen"""
         self._ball.x = self._size[0] // 2 - 15
         self._ball.y = self._size[1] // 2 - 15
-        self._ball_velocity = [8 * random.choice([-1, 1]), 8 * random.choice([-1, 1])]
+        # Stop the ball during reset - velocity will be set when serve ends
+        self._ball_velocity = [0, 0]
         self._wait_after_score = True
         self._score_time = pygame.time.get_ticks()
     
@@ -423,6 +426,7 @@ class GameOver(Scene):
         super().__init__(screen, background_color, soundtrack=soundtrack)
         self._winner = winner
         self._game_mode = game_mode
+        self._restart = False
 
     def draw(self):
         """draw scene to screen"""
@@ -440,7 +444,7 @@ class GameOver(Scene):
         # exit game instructions
         info_font = pygame.font.Font("assets/fonts/pong.ttf", 40)
         instructions_surface = info_font.render(
-            "Press q to quit", True, rgbcolors.black
+            "Press Q to quit or R to restart", True, rgbcolors.black
         )
         instructions_rect = instructions_surface.get_rect(
             center=(self._screen.get_width() // 2, self._screen.get_height() // 2 + 80)
@@ -454,5 +458,10 @@ class GameOver(Scene):
             if event.key == pygame.K_q:
                 self._is_valid = False
             elif event.key == pygame.K_r:
-                # restart the game
-                self._game_mode == self._game_mode
+                # Set restart flag and exit scene
+                self._restart = True
+                self._is_valid = False
+                
+    def should_restart(self):
+        """Return whether the game should restart"""
+        return self._restart

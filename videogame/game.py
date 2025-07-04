@@ -127,7 +127,20 @@ class PongGame(VideoGame):
                         if self._scene_manager._scenes:
                             self._scene_manager._scenes[-1].start_scene()
                 elif isinstance(current_scene, GameOver):
-                    run = False
+                    if current_scene.should_restart():
+                        # Restart the game - go back to title screen
+                        title_screen = TitleScreen(
+                            self._screen,
+                            "Pong",
+                            rgbcolors.black,
+                            self._size,
+                            background_color=rgbcolors.blue,
+                            soundtrack="assets/sounds/startup.mp3"
+                        )
+                        self._scene_manager.add(title_screen)
+                        title_screen.start_scene()
+                    else:
+                        run = False
 
         pygame.quit()
         sys.exit()
