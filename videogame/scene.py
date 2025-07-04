@@ -238,18 +238,23 @@ class GameScreen(Scene):
     def draw(self):
         """Draw the game scene"""
         super().draw()
+        # draw paddles and ball
         pygame.draw.rect(self._screen, rgbcolors.white, self._player)
         pygame.draw.rect(self._screen, rgbcolors.white, self._ai)
         pygame.draw.ellipse(self._screen, rgbcolors.white, self._ball)
-        pygame.draw.line(
-            self._screen,
-            rgbcolors.white,
-            (self._size[0] // 2, 0),
-            (self._size[0] // 2, self._size[1]),
-            1,
-        )
-        score_font = pygame.font.Font("assets/fonts/pong.ttf", 100)
-        score_font2 = pygame.font.Font("assets/fonts/pong.ttf", 100)
+        # draw center dotted line
+        for i, y in enumerate(range(0, self._size[1], 25)): # adjust vertical spacing on dotted line
+            if i % 2 == 0:
+                continue
+            pygame.draw.line(
+                self._screen,
+                rgbcolors.white,
+                (self._size[0] // 2, y),
+                (self._size[0] // 2, y + 20),
+                10, # adjust thickness of line
+            )
+        score_font = pygame.font.Font("assets/fonts/game.otf", 100)
+        score_font2 = pygame.font.Font("assets/fonts/game.otf", 100)
         score_surface = score_font.render(
             f"{self._player_score}", True, rgbcolors.white
         )
