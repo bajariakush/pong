@@ -116,7 +116,7 @@ class TitleScreen(Scene):
             "Use Up/Down arrows to select mode. Enter to play", True, self._color
         )
         control_surface = info_font.render(
-            "Control the paddle with W/S or Up/Down", True, self._color
+            "Player 1: W/S or Up/Down | Player 2: I/K", True, self._color
         )
         title_rect = title_surface.get_rect(
             center=(self._screen.get_width() // 2, self._screen.get_height() // 2 - 300)
@@ -148,7 +148,7 @@ class TitleScreen(Scene):
 
         # Blinking arrow
         if self._blink_visible:
-            arrow_font = pygame.font.SysFont("pub.ttf", 40)
+            arrow_font = pygame.font.SysFont("Sans-serif", 40)
             arrow_surface = arrow_font.render(">", True, self._color)
             
             # Position arrow based on selected option
@@ -196,10 +196,11 @@ class TitleScreen(Scene):
 class GameScreen(Scene):
     """Game scene for Pong"""
 
-    def __init__(self, screen, background_color, size, soundtrack="assets/sounds/gameplay.mp3"):
+    def __init__(self, screen, background_color, size, game_mode="1_player", soundtrack="assets/sounds/gameplay.mp3"):
         """Create game scene"""
         super().__init__(screen, background_color, soundtrack=soundtrack)
         self._size = size
+        self._game_mode = game_mode  # "1_player" or "2_player"
         self._soundtrack = pygame.mixer.Sound(soundtrack)
         self._ball = pygame.Rect(size[0] // 2 - 15, size[1] // 2 - 15, 30, 30)
         self._ball_velocity = [8, 8]
@@ -222,6 +223,11 @@ class GameScreen(Scene):
         self._round_delay = 1000
         self._wait_after_score = False
         self._score_time = 0
+        
+        # Two-player mode variables
+        self._player2_move_up = False
+        self._player2_move_down = False
+        self._player2_speed = 12
 
     def draw(self):
         """Draw the game scene"""
@@ -312,25 +318,31 @@ class GameScreen(Scene):
         if self._player_move_down and self._player.bottom < self._size[1]:
             self._player.y += self._player_speed
 
-        # ai paddle movement
-        self._ai_delay += 1
-        if self._ai_delay > 5:
-            self._ai_delay = 0
+        # ai paddle movement (only in 1-player mode)
+        if self._game_mode == "1_player":
+            self._ai_delay += 1
+            if self._ai_delay > 5:
+                self._ai_delay = 0
 
-        ai_random = random.randint(-40, 40)
+            ai_random = random.randint(-40, 40)
+            dead_zone = 60
 
-        dead_zone = 60
-
-        if (
-            self._ball.centery + ai_random < self._ai.centery - dead_zone
-            and self._ai.top > 0
-        ):
-            self._ai.y -= self._ai_speed
-        elif (
-            self._ball.y + ai_random > self._ai.centery + dead_zone
-            and self._ai.bottom < self._size[1]
-        ):
-            self._ai.y += self._ai_speed
+            if (
+                self._ball.centery + ai_random < self._ai.centery - dead_zone
+                and self._ai.top > 0
+            ):
+                self._ai.y -= self._ai_speed
+            elif (
+                self._ball.y + ai_random > self._ai.centery + dead_zone
+                and self._ai.bottom < self._size[1]
+            ):
+                self._ai.y += self._ai_speed
+        else:  # 2-player mode
+            # Player 2 paddle movement
+            if self._player2_move_up and self._ai.top > 0:
+                self._ai.y -= self._player2_speed
+            if self._player2_move_down and self._ai.bottom < self._size[1]:
+                self._ai.y += self._player2_speed
 
         # handle ball movement when out of bounds/scoring
         if self._ball.right < 0:
@@ -365,23 +377,41 @@ class GameScreen(Scene):
     def process_event(self, event):
         """handles player paddle movement"""
         if event.type == pygame.KEYDOWN:
+            # Player 1 controls
             if event.key == pygame.K_w or event.key == pygame.K_UP:
                 self._player_move_up = True
             if event.key == pygame.K_s or event.key == pygame.K_DOWN:
                 self._player_move_down = True
+            
+            # Player 2 controls (only in 2-player mode)
+            if self._game_mode == "2_player":
+                if event.key == pygame.K_i:  # I key for up
+                    self._player2_move_up = True
+                if event.key == pygame.K_k:  # K key for down
+                    self._player2_move_down = True
+                    
         if event.type == pygame.KEYUP:
+            # Player 1 controls
             if event.key == pygame.K_w or event.key == pygame.K_UP:
                 self._player_move_up = False
             if event.key == pygame.K_s or event.key == pygame.K_DOWN:
                 self._player_move_down = False
+            
+            # Player 2 controls (only in 2-player mode)
+            if self._game_mode == "2_player":
+                if event.key == pygame.K_i:  # I key for up
+                    self._player2_move_up = False
+                if event.key == pygame.K_k:  # K key for down
+                    self._player2_move_down = False
 
 
 class GameOver(Scene):
     """game over scene for pong"""
 
-    def __init__(self, screen, winner, background_color=rgbcolors.black):
+    def __init__(self, screen, winner, game_mode="1_player", background_color=rgbcolors.black):
         super().__init__(screen, background_color)
         self._winner = winner
+        self._game_mode = game_mode
 
     def draw(self):
         """draw scene to screen"""
