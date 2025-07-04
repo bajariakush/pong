@@ -95,18 +95,18 @@ class TitleScreen(PressAnyKeyToExitScene):
     def draw(self):
         """Draw title scene to screen"""
         super().draw()
-        title_font = pygame.font.SysFont("assets/fonts/pong.ttf", 80)
-        info_font = pygame.font.SysFont("assets/fonts/pong.ttf", 20)
-        player1_font = pygame.font.SysFont("assets/fonts/pong.ttf", 40)
-        player2_font = pygame.font.SysFont("assets/fonts/pong.ttf", 40)
-        title_surface = title_font.render(self._message, True, self._color)
+        title_font = pygame.font.Font("assets/fonts/pong.ttf", 80)
+        info_font = pygame.font.Font("assets/fonts/pong.ttf", 20)
+        player1_font = pygame.font.Font("assets/fonts/pong.ttf", 40)
+        player2_font = pygame.font.Font("assets/fonts/pong.ttf", 40)
+        title_surface = title_font.render(self._message, True, rgbcolors.black)
         
         # what to display and positioning
         instructions_surface = info_font.render(
-            "Press any key to start", True, self._color
+            "Press enter or return to play", True, rgbcolors.black
         )
         control_surface = info_font.render(
-            "Control the paddle with W/S or Up/Down", True, self._color
+            "Control the paddle with W/S or Up/Down", True, rgbcolors.black
         )
         title_rect = title_surface.get_rect(
             center=(self._screen.get_width() // 2, self._screen.get_height() // 2 - 300)
@@ -118,10 +118,10 @@ class TitleScreen(PressAnyKeyToExitScene):
             center=(self._screen.get_width() // 2, self._screen.get_height() // 2 + 300)
         )
         player1_surface = player1_font.render(
-            "1 Player", True, self._color
+            "1 Player", True, rgbcolors.black
         )
         player2_surface = player2_font.render(
-            "2 Player", True, self._color
+            "2 Player", True, rgbcolors.black
         )
         player1_rect = player1_surface.get_rect(
             center=(self._screen.get_width() // 2, self._screen.get_height() // 2 - 50)
@@ -138,8 +138,8 @@ class TitleScreen(PressAnyKeyToExitScene):
 
         # blinking arrow
         if self._blink_visible:
-            arrow_font = pygame.font.SysFont("assets/fonts/pong.ttf", 40)
-            arrow_surface = arrow_font.render(">", True, rgbcolors.blue)
+            arrow_font = pygame.font.Font("assets/fonts/pong.ttf", 40)
+            arrow_surface = arrow_font.render(">", True, rgbcolors.black)
             arrow_rect = arrow_surface.get_rect(
                 midright=(player1_rect.left - 20, player1_rect.centery - 3.5)
             )
@@ -196,8 +196,8 @@ class GameScreen(Scene):
             (self._size[0] // 2, self._size[1]),
             1,
         )
-        score_font = pygame.font.SysFont("assets/fonts/pong.ttf", 100)
-        score_font2 = pygame.font.SysFont("assets/fonts/pong.ttf", 100)
+        score_font = pygame.font.Font("assets/fonts/pong.ttf", 100)
+        score_font2 = pygame.font.Font("assets/fonts/pong.ttf", 100)
         score_surface = score_font.render(
             f"{self._player_score}", True, rgbcolors.white
         )
@@ -346,7 +346,7 @@ class GameOver(Scene):
     def draw(self):
         """draw scene to screen"""
         super().draw()
-        end_font = pygame.font.SysFont("assets/fonts/pong.ttf", 100)
+        end_font = pygame.font.Font("assets/fonts/pong.ttf", 100)
         message = f"{self._winner} Wins!"
         message_surface = end_font.render(message, True, rgbcolors.white)
         message_rect = message_surface.get_rect(
@@ -357,7 +357,7 @@ class GameOver(Scene):
         # gameover options
 
         # exit game instructions
-        info_font = pygame.font.SysFont("assets/fonts/pong.ttf", 40)
+        info_font = pygame.font.Font("assets/fonts/pong.ttf", 40)
         instructions_surface = info_font.render(
             "Press any key to exit", True, rgbcolors.white
         )
