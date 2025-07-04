@@ -53,7 +53,7 @@ class Scene:
         if self._soundtrack:
             try:
                 pygame.mixer.music.load(self._soundtrack)
-                pygame.mixer.music.set_volume(1.0)
+                pygame.mixer.music.set_volume(.5)
             except pygame.error as pygame_error:
                 print("\n".join(pygame_error.args))
                 raise SystemExit("broken!!") from pygame_error
@@ -83,9 +83,9 @@ class PressAnyKeyToExitScene(Scene):
 class TitleScreen(Scene):
     """Title screen for Pong"""
 
-    def __init__(self, screen, message, color, size, background_color=rgbcolors.white):
+    def __init__(self, screen, message, color, size, background_color=rgbcolors.white, soundtrack="assets/sounds/startup.mp3"):
         """Create title screen"""
-        super().__init__(screen, background_color)
+        super().__init__(screen, background_color, soundtrack=soundtrack)
         self._message = message
         self._color = color
         self._size = size
@@ -116,7 +116,10 @@ class TitleScreen(Scene):
             "Use Up/Down arrows to select mode. Enter to play", True, self._color
         )
         control_surface = info_font.render(
-            "Player 1: W/S or Up/Down | Player 2: I/K", True, self._color
+            "Player 1: W/S or Up/Down", True, self._color
+        )
+        control_surface2 = info_font.render(
+            "Player 2: I/K", True, self._color
         )
         title_rect = title_surface.get_rect(
             center=(self._screen.get_width() // 2, self._screen.get_height() // 2 - 300)
@@ -126,6 +129,9 @@ class TitleScreen(Scene):
         )
         control_rect = control_surface.get_rect(
             center=(self._screen.get_width() // 2, self._screen.get_height() // 2 + 300)
+        )
+        control_rect2 = control_surface2.get_rect(
+            center=(self._screen.get_width() // 2, self._screen.get_height() // 2 + 350)
         )
         player1_surface = player1_font.render(
             "1 Player", True, self._color
@@ -143,6 +149,7 @@ class TitleScreen(Scene):
         self._screen.blit(title_surface, title_rect)
         self._screen.blit(instructions_surface, instructions_rect)
         self._screen.blit(control_surface, control_rect)
+        self._screen.blit(control_surface2, control_rect2)
         self._screen.blit(player1_surface, player1_rect)
         self._screen.blit(player2_surface, player2_rect)
 
@@ -201,7 +208,6 @@ class GameScreen(Scene):
         super().__init__(screen, background_color, soundtrack=soundtrack)
         self._size = size
         self._game_mode = game_mode  # "1_player" or "2_player"
-        self._soundtrack = pygame.mixer.Sound(soundtrack)
         self._ball = pygame.Rect(size[0] // 2 - 15, size[1] // 2 - 15, 30, 30)
         self._ball_velocity = [8, 8]
         self._player = pygame.Rect(30, size[1] // 2 - 80, 20, 180)
@@ -408,17 +414,17 @@ class GameScreen(Scene):
 class GameOver(Scene):
     """game over scene for pong"""
 
-    def __init__(self, screen, winner, game_mode="1_player", background_color=rgbcolors.black):
-        super().__init__(screen, background_color)
+    def __init__(self, screen, winner, game_mode="1_player", background_color=rgbcolors.blue, soundtrack=None):
+        super().__init__(screen, background_color, soundtrack=soundtrack)
         self._winner = winner
         self._game_mode = game_mode
 
     def draw(self):
         """draw scene to screen"""
         super().draw()
-        end_font = pygame.font.Font("assets/fonts/pong.ttf", 100)
+        end_font = pygame.font.Font("assets/fonts/pong.ttf", 80)
         message = f"{self._winner} Wins!"
-        message_surface = end_font.render(message, True, rgbcolors.white)
+        message_surface = end_font.render(message, True, rgbcolors.black)
         message_rect = message_surface.get_rect(
             center=(self._screen.get_width() // 2, self._screen.get_height() // 2)
         )
@@ -429,10 +435,10 @@ class GameOver(Scene):
         # exit game instructions
         info_font = pygame.font.Font("assets/fonts/pong.ttf", 40)
         instructions_surface = info_font.render(
-            "Press any key to exit", True, rgbcolors.white
+            "Press q to quit", True, rgbcolors.black
         )
         instructions_rect = instructions_surface.get_rect(
-            center=(self._screen.get_width() // 2, self._screen.get_height() // 2 + 60)
+            center=(self._screen.get_width() // 2, self._screen.get_height() // 2 + 80)
         )
         self._screen.blit(instructions_surface, instructions_rect)
 
@@ -440,4 +446,8 @@ class GameOver(Scene):
         """Process game events."""
         super().process_event(event)
         if event.type == pygame.KEYDOWN:
-            self._is_valid = False
+            if event.key == pygame.K_q:
+                self._is_valid = False
+            elif event.key == pygame.K_r:
+                # restart the game
+                self._game_mode == self._game_mode
