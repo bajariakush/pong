@@ -109,14 +109,14 @@ class TitleScreen(Scene):
             player1_font = pygame.font.Font(None, 40)
             player2_font = pygame.font.Font(None, 40)
             
-        title_surface = title_font.render(self._message, True, rgbcolors.black)
+        title_surface = title_font.render(self._message, True, self._color)
         
         # what to display and positioning
         instructions_surface = info_font.render(
-            "Use Up/Down arrows to select, Enter to play", True, rgbcolors.black
+            "Use Up/Down arrows to select mode. Enter to play", True, self._color
         )
         control_surface = info_font.render(
-            "Control the paddle with W/S or Up/Down", True, rgbcolors.black
+            "Control the paddle with W/S or Up/Down", True, self._color
         )
         title_rect = title_surface.get_rect(
             center=(self._screen.get_width() // 2, self._screen.get_height() // 2 - 300)
@@ -128,10 +128,10 @@ class TitleScreen(Scene):
             center=(self._screen.get_width() // 2, self._screen.get_height() // 2 + 300)
         )
         player1_surface = player1_font.render(
-            "1 Player", True, rgbcolors.black
+            "1 Player", True, self._color
         )
         player2_surface = player2_font.render(
-            "2 Player", True, rgbcolors.black
+            "2 Player", True, self._color
         )
         player1_rect = player1_surface.get_rect(
             center=(self._screen.get_width() // 2, self._screen.get_height() // 2 - 50)
@@ -146,14 +146,10 @@ class TitleScreen(Scene):
         self._screen.blit(player1_surface, player1_rect)
         self._screen.blit(player2_surface, player2_rect)
 
-        # blinking arrow
+        # Blinking arrow
         if self._blink_visible:
-            try:
-                arrow_font = pygame.font.Font("assets/fonts/pong.ttf", 40)
-            except pygame.error:
-                arrow_font = pygame.font.Font(None, 40)
-            
-            arrow_surface = arrow_font.render(">", True, rgbcolors.black)
+            arrow_font = pygame.font.SysFont("pub.ttf", 40)
+            arrow_surface = arrow_font.render(">", True, self._color)
             
             # Position arrow based on selected option
             if self._selected_option == 0:  # 1 Player
@@ -172,7 +168,6 @@ class TitleScreen(Scene):
         if self._blinker_timer >= 30:
             self._blink_visible = not self._blink_visible
             self._blinker_timer = 0
-        self.draw()
 
     def process_event(self, event):
         """Process game events for menu navigation"""
@@ -180,14 +175,18 @@ class TitleScreen(Scene):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
                 self._selected_option = 0  # Select "1 Player"
+                print("Selected 1 Player")
             elif event.key == pygame.K_DOWN:
                 self._selected_option = 1  # Select "2 Player"
+                print("Selected 2 Player")
             elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                 # Set game mode based on selection and exit title screen
                 if self._selected_option == 0:
                     self._game_mode = "1_player"
+                    print("Starting 1 Player game")
                 else:
                     self._game_mode = "2_player"
+                    print("Starting 2 Player game")
                 self._is_valid = False
 
     def get_selected_game_mode(self):
