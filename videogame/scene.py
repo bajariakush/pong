@@ -89,13 +89,19 @@ class TitleScreen(PressAnyKeyToExitScene):
         self._message = message
         self._color = color
         self._size = size
+        self._blinker_timer = 0
+        self._blink_visible = True
 
     def draw(self):
         """Draw title scene to screen"""
         super().draw()
         title_font = pygame.font.SysFont("assets/fonts/pong.ttf", 80)
         info_font = pygame.font.SysFont("assets/fonts/pong.ttf", 20)
+        player1_font = pygame.font.SysFont("assets/fonts/pong.ttf", 40)
+        player2_font = pygame.font.SysFont("assets/fonts/pong.ttf", 40)
         title_surface = title_font.render(self._message, True, self._color)
+        
+        # what to display and positioning
         instructions_surface = info_font.render(
             "Press any key to start", True, self._color
         )
@@ -103,18 +109,49 @@ class TitleScreen(PressAnyKeyToExitScene):
             "Control the paddle with W/S or Up/Down", True, self._color
         )
         title_rect = title_surface.get_rect(
-            center=(self._screen.get_width() // 2, self._screen.get_height() // 2 - 80)
+            center=(self._screen.get_width() // 2, self._screen.get_height() // 2 - 300)
         )
         instructions_rect = instructions_surface.get_rect(
-            center=(self._screen.get_width() // 2, self._screen.get_height() // 2 + 20)
+            center=(self._screen.get_width() // 2, self._screen.get_height() // 2 + 250)
         )
         control_rect = control_surface.get_rect(
-            center=(self._screen.get_width() // 2, self._screen.get_height() // 2 + 80)
+            center=(self._screen.get_width() // 2, self._screen.get_height() // 2 + 300)
         )
+        player1_surface = player1_font.render(
+            "1 Player", True, self._color
+        )
+        player2_surface = player2_font.render(
+            "2 Player", True, self._color
+        )
+        player1_rect = player1_surface.get_rect(
+            center=(self._screen.get_width() // 2, self._screen.get_height() // 2 - 50)
+        )
+        player2_rect = player2_surface.get_rect(
+            center=(self._screen.get_width() // 2, self._screen.get_height() // 2)
+        )
+        # draw to screen
         self._screen.blit(title_surface, title_rect)
         self._screen.blit(instructions_surface, instructions_rect)
         self._screen.blit(control_surface, control_rect)
+        self._screen.blit(player1_surface, player1_rect)
+        self._screen.blit(player2_surface, player2_rect)
 
+        # blinking arrow
+        if self._blink_visible:
+            arrow_font = pygame.font.SysFont("assets/fonts/pong.ttf", 40)
+            arrow_surface = arrow_font.render(">", True, rgbcolors.blue)
+            arrow_rect = arrow_surface.get_rect(
+                midright=(player1_rect.left - 20, player1_rect.centery - 3.5)
+            )
+            self._screen.blit(arrow_surface, arrow_rect)
+
+    def update_scene(self):
+        """Update the blinking arrow"""
+        self._blinker_timer += 1
+        if self._blinker_timer >= 30:
+            self._blink_visible = not self._blink_visible
+            self._blinker_timer = 0
+        self.draw()
 
 class GameScreen(Scene):
     """Game scene for Pong"""
