@@ -208,10 +208,10 @@ class GameScreen(Scene):
         super().__init__(screen, background_color, soundtrack=soundtrack)
         self._size = size
         self._game_mode = game_mode  # "1_player" or "2_player"
-        self._ball = pygame.Rect(size[0] // 2 - 15, size[1] // 2 - 15, 30, 30)
+        self._ball = pygame.Rect(size[0] // 2 - 10, size[1] // 2 - 10, 20, 20)
         self._ball_velocity = [8, 8]
-        self._player = pygame.Rect(30, size[1] // 2 - 80, 20, 180)
-        self._ai = pygame.Rect(size[0] - 40, size[1] // 2 - 80, 20, 180)
+        self._player = pygame.Rect(30, size[1] // 2 - 35, 10, 70)
+        self._ai = pygame.Rect(size[0] - 40, size[1] // 2 - 35, 10, 70)
         self._player_move_up = False
         self._player_move_down = False
         self._player_speed = 12
@@ -371,8 +371,8 @@ class GameScreen(Scene):
 
     def _reset_ball(self):
         """reset the ball to the center of the screen"""
-        self._ball.x = self._size[0] // 2 - 15
-        self._ball.y = self._size[1] // 2 - 15
+        self._ball.x = self._size[0] // 2 - 10
+        self._ball.y = self._size[1] // 2 - 10
         # Stop the ball during reset - velocity will be set when serve ends
         self._ball_velocity = [0, 0]
         self._wait_after_score = True
@@ -381,12 +381,12 @@ class GameScreen(Scene):
     def _reset_player(self):
         """reset the player paddle to the left side of the screen"""
         self._player.x = 30
-        self._player.y = self._size[1] // 2 - 80
+        self._player.y = self._size[1] // 2 - 35  # Center paddle vertically
 
     def _reset_ai(self):
         """reset the ai paddle to the right side of the screen"""
         self._ai.x = self._size[0] - 40
-        self._ai.y = self._size[1] // 2 - 80
+        self._ai.y = self._size[1] // 2 - 35  # Center paddle vertically
 
     def process_event(self, event):
         """handles player paddle movement"""
@@ -438,8 +438,6 @@ class GameOver(Scene):
             center=(self._screen.get_width() // 2, self._screen.get_height() // 2)
         )
         self._screen.blit(message_surface, message_rect)
-
-        # gameover options
 
         # exit game instructions
         info_font = pygame.font.Font("assets/fonts/pong.ttf", 40)
