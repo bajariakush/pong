@@ -102,9 +102,9 @@ class PongGame(VideoGame):
                 
                 if isinstance(current_scene, GameScreen):
                     if current_scene._game_mode == "1_player":
-                        winner = ("Player" if current_scene._player_score >= 3 else "AI")
-                    else:  # 2_player
-                        winner = ("Player 1" if current_scene._player_score >= 3 else "Player 2")
+                        winner = ("Player" if current_scene._player_score >= 1 else "AI")
+                    elif current_scene._game_mode == "2_player":
+                        winner = ("Player 1" if current_scene._player_score >= 1 else "Player 2")
                     game_over_scene = GameOver(self._screen, winner, current_scene._game_mode)
                     self._scene_manager.add(game_over_scene)
                     game_over_scene.start_scene()
