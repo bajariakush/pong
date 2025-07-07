@@ -366,7 +366,7 @@ class GameScreen(Scene):
             self._reset_ball()
 
         # check if game is over
-        if self._player_score >= 3 or self._ai_score >= 3:
+        if self._player_score >= 1 or self._ai_score >= 1: # set to 1 for testing purposes
             self._is_valid = False
 
     def _reset_ball(self):
@@ -422,8 +422,14 @@ class GameScreen(Scene):
 class GameOver(Scene):
     """game over scene for pong"""
 
-    def __init__(self, screen, winner, game_mode="1_player", background_color=rgbcolors.blue, soundtrack=None):
+    def __init__(self, screen, winner, game_mode="1_player" or "2_player", background_color=rgbcolors.blue, soundtrack=None):
         super().__init__(screen, background_color, soundtrack=soundtrack)
+        self._player_win_sound = pygame.mixer.Sound("assets/sounds/player_win.wav")
+        self._ai_win_sound = pygame.mixer.Sound("assets/sounds/ai_win.wav")
+        if winner == "Player" or winner == "Player 1" or winner == "Player 2":
+            self._player_win_sound.play()
+        elif winner == "AI":
+            self._ai_win_sound.play()
         self._winner = winner
         self._game_mode = game_mode
         self._restart = False
@@ -432,20 +438,20 @@ class GameOver(Scene):
         """draw scene to screen"""
         super().draw()
         end_font = pygame.font.Font("assets/fonts/pong.ttf", 80)
-        message = f"{self._winner} Wins!"
+        message = f"{self._winner} Wins!,"
         message_surface = end_font.render(message, True, rgbcolors.black)
         message_rect = message_surface.get_rect(
-            center=(self._screen.get_width() // 2, self._screen.get_height() // 2)
+            center=(self._screen.get_width() // 2, self._screen.get_height() // 2 - 275)
         )
         self._screen.blit(message_surface, message_rect)
 
         # exit game instructions
-        info_font = pygame.font.Font("assets/fonts/pong.ttf", 40)
+        info_font = pygame.font.Font("assets/fonts/pong.ttf", 25)
         instructions_surface = info_font.render(
             "Press Q to quit or R to restart", True, rgbcolors.black
         )
         instructions_rect = instructions_surface.get_rect(
-            center=(self._screen.get_width() // 2, self._screen.get_height() // 2 + 80)
+            center=(self._screen.get_width() // 2, self._screen.get_height() // 2 + 200)
         )
         self._screen.blit(instructions_surface, instructions_rect)
 
