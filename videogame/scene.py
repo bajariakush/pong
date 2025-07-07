@@ -209,13 +209,13 @@ class GameScreen(Scene):
         self._size = size
         self._game_mode = game_mode  # "1_player" or "2_player"
         self._ball = pygame.Rect(size[0] // 2 - 10, size[1] // 2 - 10, 20, 20)
-        self._ball_velocity = [8, 8]
+        self._ball_velocity = [1, 1]
         self._player = pygame.Rect(30, size[1] // 2 - 35, 10, 70)
         self._ai = pygame.Rect(size[0] - 40, size[1] // 2 - 35, 10, 70)
         self._player_move_up = False
         self._player_move_down = False
         self._player_speed = 12
-        self._ai_speed = 9
+        self._ai_speed = 11
         self._ai_delay = 0
         self._player_score = 0
         self._ai_score = 0
@@ -251,7 +251,7 @@ class GameScreen(Scene):
                 rgbcolors.white,
                 (self._size[0] // 2, y),
                 (self._size[0] // 2, y + 20),
-                10, # adjust thickness of line
+                5, # adjust thickness of line
             )
         score_font = pygame.font.Font("assets/fonts/game.otf", 100)
         score_font2 = pygame.font.Font("assets/fonts/game.otf", 100)
@@ -338,7 +338,7 @@ class GameScreen(Scene):
                 self._ai_delay = 0
 
             ai_random = random.randint(-40, 40)
-            dead_zone = 60
+            dead_zone = 25 # lower for more accuracy
 
             if (
                 self._ball.centery + ai_random < self._ai.centery - dead_zone
