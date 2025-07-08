@@ -437,21 +437,26 @@ class GameOver(Scene):
     def draw(self):
         """draw scene to screen"""
         super().draw()
-        end_font = pygame.font.Font("assets/fonts/pong.ttf", 80)
-        message = f"{self._winner} Wins!,"
+        # Draw the background
+        end_font = pygame.font.Font("assets/fonts/pong.ttf", 60)
+        info_font = pygame.font.Font("assets/fonts/pong.ttf", 25)
+
+        message = f"{self._winner} Wins!"
         message_surface = end_font.render(message, True, rgbcolors.black)
+        # set positioning
+        screen_center_x = self._screen.get_width() // 2
+        screen_center_y = self._screen.get_height() // 2
         message_rect = message_surface.get_rect(
-            center=(self._screen.get_width() // 2, self._screen.get_height() // 2 - 275)
+            center=(screen_center_x, screen_center_y - 275)
         )
         self._screen.blit(message_surface, message_rect)
 
         # exit game instructions
-        info_font = pygame.font.Font("assets/fonts/pong.ttf", 25)
         instructions_surface = info_font.render(
             "Press Q to quit or R to restart", True, rgbcolors.black
         )
         instructions_rect = instructions_surface.get_rect(
-            center=(self._screen.get_width() // 2, self._screen.get_height() // 2 + 200)
+            center=(screen_center_x, screen_center_y + 200)
         )
         self._screen.blit(instructions_surface, instructions_rect)
 

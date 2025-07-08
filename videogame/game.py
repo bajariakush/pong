@@ -56,7 +56,7 @@ class VideoGame:
 
 
 class PongGame(VideoGame):
-    """Show the opening screen for the Pong game."""
+    """Handle pong game scenes"""
 
     def __init__(self):
         """initialize the Pong game"""
