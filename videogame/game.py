@@ -109,23 +109,27 @@ class PongGame(VideoGame):
                     self._scene_manager.add(game_over_scene)
                     game_over_scene.start_scene()
                 elif isinstance(current_scene, TitleScreen):
-                    # Get the selected game mode and create appropriate GameScreen
-                    selected_mode = current_scene.get_selected_game_mode()
-                    if selected_mode:
-                        game_screen = GameScreen(
-                            self._screen, 
-                            rgbcolors.blue,
-                            self._size, 
-                            game_mode=selected_mode,
-                            soundtrack="assets/sounds/gameplay.mp3"
-                        )
-                        self._scene_manager.add(game_screen)
-                        game_screen.start_scene()
+                    # Check if user requested to quit
+                    if current_scene.quit_requested():
+                        run = False
                     else:
-                        # Default to 1-player if no selection was made
-                        self._scene_manager.go_to_next_scene()
-                        if self._scene_manager._scenes:
-                            self._scene_manager._scenes[-1].start_scene()
+                        # Get the selected game mode and create appropriate GameScreen
+                        selected_mode = current_scene.get_selected_game_mode()
+                        if selected_mode:
+                            game_screen = GameScreen(
+                                self._screen, 
+                                rgbcolors.blue,
+                                self._size, 
+                                game_mode=selected_mode,
+                                soundtrack="assets/sounds/gameplay.mp3"
+                            )
+                            self._scene_manager.add(game_screen)
+                            game_screen.start_scene()
+                        else:
+                            # Default to 1-player if no selection was made
+                            self._scene_manager.go_to_next_scene()
+                            if self._scene_manager._scenes:
+                                self._scene_manager._scenes[-1].start_scene()
                 elif isinstance(current_scene, GameOver):
                     if current_scene.should_restart():
                         # Restart the game - go back to title screen

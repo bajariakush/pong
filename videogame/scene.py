@@ -93,6 +93,7 @@ class TitleScreen(Scene):
         self._blink_visible = True
         self._selected_option = 0
         self._game_mode = None
+        self._quit_requested = False
 
     def draw(self):
         """Draw title scene to screen"""
@@ -178,9 +179,12 @@ class TitleScreen(Scene):
 
     def process_event(self, event):
         """Process game events for menu navigation"""
-        super().process_event(event)
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
+            if event.key == pygame.K_ESCAPE:
+                print("Exiting game")
+                self._quit_requested = True
+                self._is_valid = False
+            elif event.key == pygame.K_UP:
                 self._selected_option = 0  # Select "1 Player"
                 print("Selected 1 Player")
             elif event.key == pygame.K_DOWN:
@@ -195,10 +199,18 @@ class TitleScreen(Scene):
                     self._game_mode = "2_player"
                     print("Starting 2 Player game")
                 self._is_valid = False
+        elif event.type == pygame.QUIT:
+            # Handle QUIT event
+            print("Good Bye!")
+            self._is_valid = False
 
     def get_selected_game_mode(self):
         """Return the selected game mode"""
         return self._game_mode
+
+    def quit_requested(self):
+        """Return whether the user requested to quit the game"""
+        return self._quit_requested
 
 class GameScreen(Scene):
     """Game scene for Pong"""
