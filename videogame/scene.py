@@ -309,10 +309,10 @@ class GameScreen(Scene):
 
         # collision sound effect
         if self._ball.colliderect(self._player):
-            self._ball_velocity[0] *= -1
+            self._ball_velocity[0] *= random.choice([-1, -2, -3])
             self._paddle_sound.play()
         elif self._ball.colliderect(self._ai):
-            self._ball_velocity[0] *= -1
+            self._ball_velocity[0] *= random.choice([-1, -2, -3])
             self._paddle_sound.play()
 
         self._ball.x += self._ball_velocity[0]
@@ -378,7 +378,7 @@ class GameScreen(Scene):
             self._reset_ball()
 
         # check if game is over
-        if self._player_score >= 1 or self._ai_score >= 1: # set to 1 for testing purposes
+        if self._player_score >= 3 or self._ai_score >= 3: # set to 1 for testing purposes
             self._is_valid = False
 
     def _reset_ball(self):
